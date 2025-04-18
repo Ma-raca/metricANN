@@ -6,8 +6,8 @@ from search.linear_scan import linear_scan
 
 
 def ProductQuantization_Train(dataset, m, k):
+    pass
 
-    return 1
 
 
 if __name__ == '__main__':
