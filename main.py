@@ -5,8 +5,8 @@ import numpy as np
 from search.linear_scan import linear_scan
 
 
-def main():
-    filepath = "D:\\python\\metricANN\data\\texas\\texas.txt"
+def main(filepath):
+
     dataset, dim, size = load_vec(filepath)
     query = np.array([-94.04345, 33.552254])
     k = 100
@@ -20,4 +20,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    filepath = "D:\\python\\metricANN\\data\\randomvector5d1m.txt"
+    main(filepath)
