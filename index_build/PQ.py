@@ -19,9 +19,10 @@ class KMeans:
         random_indices = np.random.choice(datas.shape[0], self.n_clusters, replace=False)
         self.centroids = datas[random_indices]
         self.labels = np.zeros(datas.shape[0], dtype=np.int32)
-        t = 1
+        t = 0
         while t < self.T:
-            for i in range(dataset.shape[0]):
+            t = t + 1
+            for i in range(datas.shape[0]):
                 # 计算每个点到每个聚类中心的距离
                 distances = np.zeros(self.n_clusters)
                 for j in range(self.n_clusters):
@@ -30,8 +31,7 @@ class KMeans:
                 # 为每个点分配最近的聚类中心
                 self.labels[i] = np.argmin(distances)
             # 更新聚类中心
-            self.centroids = np.array([datas[self.labels == i].mean(axis=0) for i in range(k)])
-            t = t + 1
+            self.centroids = np.array([datas[self.labels == i].mean(axis=0) for i in range(self.n_clusters)])
 
 
 def ProductQuantization_Train(dataset, m, k):
@@ -64,7 +64,7 @@ def ProductQuantization_Train(dataset, m, k):
         print(f"在子空间 {j} 上进行 K-means 聚类...")
         kmeans = KMeans(k)
         kmeans.fit(subspaces[j])
-        codebooks.append(kmeans.cluster_centers_)
+        codebooks.append(kmeans.centroids)
 
     # 4. 对数据进行编码
     codes = np.zeros((n, m), dtype=np.int32)
@@ -87,6 +87,7 @@ def ProductQuantization_Train(dataset, m, k):
 if __name__ == '__main__':
     filepath = "D:\\python\\metricANN\\data\\UniformVector20d\\randomvector20d1m.txt"
     dataset, dim, size = load_vec(filepath)
+    dataset = dataset[0:5000]
     query = np.array([-94.04345, 33.552254])
 
     # selected_indices, selected_points = farthest_first_traversal(dataset, k)
