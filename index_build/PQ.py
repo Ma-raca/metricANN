@@ -3,35 +3,7 @@ from metricDist.minkowskiDist import minkowski_distance
 from pivotSpace.pivotSelect import farthest_first_traversal
 import numpy as np
 from search.linear_scan import linear_scan
-
-
-class KMeans:
-    def __init__(self, n_clusters, random_state=42, T=10):
-        self.labels = None
-        self.centroids = None
-        self.n_clusters = n_clusters
-        self.random_state = random_state
-        self.T = T
-
-    def fit(self, datas):
-        # 随机选择初始聚类中心
-        np.random.seed(self.random_state)
-        random_indices = np.random.choice(datas.shape[0], self.n_clusters, replace=False)
-        self.centroids = datas[random_indices]
-        self.labels = np.zeros(datas.shape[0], dtype=np.int32)
-        t = 0
-        while t < self.T:
-            t = t + 1
-            for i in range(datas.shape[0]):
-                # 计算每个点到每个聚类中心的距离
-                distances = np.zeros(self.n_clusters)
-                for j in range(self.n_clusters):
-                    distances[j] = minkowski_distance(datas[i], self.centroids[j], 2)
-
-                # 为每个点分配最近的聚类中心
-                self.labels[i] = np.argmin(distances)
-            # 更新聚类中心
-            self.centroids = np.array([datas[self.labels == i].mean(axis=0) for i in range(self.n_clusters)])
+from sklearn.cluster import KMeans
 
 
 def ProductQuantization_Train(dataset, m, k):
@@ -62,9 +34,10 @@ def ProductQuantization_Train(dataset, m, k):
     codebooks = []
     for j in range(m):
         print(f"在子空间 {j} 上进行 K-means 聚类...")
-        kmeans = KMeans(k)
+        # 使用scikit-learn的KMeans替代自定义实现
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init=1)
         kmeans.fit(subspaces[j])
-        codebooks.append(kmeans.centroids)
+        codebooks.append(kmeans.cluster_centers_)
 
     # 4. 对数据进行编码
     codes = np.zeros((n, m), dtype=np.int32)
