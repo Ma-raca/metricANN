@@ -6,7 +6,7 @@ from search.linear_scan import linear_scan
 
 
 class KMeans:
-    def __init__(self, n_clusters, random_state=42, T=100):
+    def __init__(self, n_clusters, random_state=42, T=10):
         self.labels = None
         self.centroids = None
         self.n_clusters = n_clusters
@@ -21,7 +21,7 @@ class KMeans:
         self.labels = np.zeros(datas.shape[0], dtype=np.int32)
         t = 1
         while t < self.T:
-            for i in range(dataset[0]):
+            for i in range(dataset.shape[0]):
                 # 计算每个点到每个聚类中心的距离
                 distances = np.zeros(self.n_clusters)
                 for j in range(self.n_clusters):
@@ -85,13 +85,13 @@ def ProductQuantization_Train(dataset, m, k):
 
 
 if __name__ == '__main__':
-    filepath = "D:\\python\\metricANN\\data\\randomvector5d1m.txt"
+    filepath = "D:\\python\\metricANN\\data\\UniformVector20d\\randomvector20d1m.txt"
     dataset, dim, size = load_vec(filepath)
     query = np.array([-94.04345, 33.552254])
 
     # selected_indices, selected_points = farthest_first_traversal(dataset, k)
     # pivotSet = selected_points
     # print(selected_indices)
-    m = 5
-    k = 5
+    m = 8
+    k = 256
     ProductQuantization_Train(dataset, m, k)
