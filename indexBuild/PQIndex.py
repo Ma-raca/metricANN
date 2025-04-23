@@ -30,7 +30,8 @@ def ProductQuantization_Train(dataset, m, k):
         subspace_j = dataset[:, start_dim:end_dim]
         subspaces.append(subspace_j)
 
-    # 3.在每个子空间上应用 K-means 聚类
+    # 3.在每个子空间上应用 K-means 聚类，得到codebooks
+    # codebooks是聚类中心
     codebooks = []
     for j in range(m):
         print(f"在子空间 {j} 上进行 K-means 聚类...")
@@ -38,8 +39,9 @@ def ProductQuantization_Train(dataset, m, k):
         kmeans = KMeans(n_clusters=k, random_state=42, n_init=1)
         kmeans.fit(subspaces[j])
         codebooks.append(kmeans.cluster_centers_)
+        print(f"子空间 {j} 的码本形状: {kmeans.cluster_centers_.shape}")
 
-    # 4. 对数据进行编码
+    # 4. 使用codebooks对数据进行编码
     codes = np.zeros((n, m), dtype=np.int32)
     for j in range(m):
         # 计算当前子空间中每个点到聚类中心的距离
@@ -50,6 +52,7 @@ def ProductQuantization_Train(dataset, m, k):
             distances[:, i] = np.sum((subspaces[j] - center) ** 2, axis=1)
 
         # 找到最近的聚类中心
+        # argmin相当于返回的是所属cluster的index，有256个聚类中心，也就是说数据的index是0-255，2的8次方，每个子空间的一个数据只用8bit,切成m份，就是m*8bit
         codes[:, j] = np.argmin(distances, axis=1)
 
     print(f"编码完成，编码形状: {codes.shape}")
@@ -60,12 +63,12 @@ def ProductQuantization_Train(dataset, m, k):
 if __name__ == '__main__':
     filepath = "D:\\python\\metricANN\\data\\UniformVector20d\\randomvector20d1m.txt"
     dataset, dim, size = load_vec(filepath)
-    dataset = dataset[0:5000]
+    dataset = dataset[0:1000, :]
     query = np.array([-94.04345, 33.552254])
 
     # selected_indices, selected_points = farthest_first_traversal(dataset, k)
     # pivotSet = selected_points
     # print(selected_indices)
-    m = 8
     k = 256
+    m = 8
     ProductQuantization_Train(dataset, m, k)
