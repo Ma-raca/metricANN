@@ -3,6 +3,7 @@ from metricDist.editDist import edit_distance
 import numpy as np
 from fileIO.vectorIO import load_vec
 from pivotSpace.pivotSelect import farthest_first_traversal
+import time
 
 
 def linear_scan_vec(dataset, query, r, k, search='range', p=2):
@@ -54,7 +55,7 @@ def linear_scan(dataset, query, r, k, search='range', p=2):
     返回:
         查询结果
     """
-
+    start_time = time.time()  # 开始计时
     n_samples = dataset.shape[0]
 
     # range query
@@ -82,7 +83,10 @@ def linear_scan(dataset, query, r, k, search='range', p=2):
         sorted_indices = np.argsort(distances)
         nearest_indices = sorted_indices[:k]
         results = dataset[nearest_indices]
-
+        
+    end_time = time.time()  # 结束计时
+    print(f"线性扫描用时: {end_time - start_time:.4f}秒")
+    
     return results
 
 
